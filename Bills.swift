@@ -1,8 +1,8 @@
 //
 //  Bills.swift
-//  OTGcashier
+//  Simple Cashier Computer
 //
-//  Created by Dianne Robbi on 1/20/17.
+//  Created by Dianne Robbi on 2/9/17.
 //  Copyright © 2017 RoadDeum. All rights reserved.
 //
 
@@ -10,8 +10,8 @@ import UIKit
 
 class Bills: UIViewController {
     
-    @IBOutlet var hundredQuantity: UITextField!
-    @IBOutlet var fiftyQuantity: UITextField!
+    @IBOutlet weak var hundredQuantity: UITextField!
+    @IBOutlet weak var fiftyQuantity: UITextField!
     @IBOutlet var twentyQuantity: UITextField!
     @IBOutlet var tenQuantity: UITextField!
     @IBOutlet var fiveQuantity: UITextField!
@@ -33,32 +33,42 @@ class Bills: UIViewController {
     
     @IBOutlet public var overallTotal: UILabel!
     
-    public var overall = Float(0)
-    public var amountSum = Float(0)
-
+    static var overall = Float(0)
+    static var amountSum = Float(0)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        Bills.overall = Bills.amountSum + CoinRolls().getTotal() + LooseCoins().getTotal()
+        overallTotal.text = String(format: "Total: $ %03.2f", Bills.overall)
     }
-
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool{
+        hundredQuantity.resignFirstResponder()
+        return true
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
     @IBAction func buttonPressed(_ sender: UIButton) {
         var product = Float(0)
         var billsSum = 0
         
         if  Int(hundredQuantity.text!) == nil{
-            amountSum = Float(0)
+            Bills.amountSum = Float(0)
             hundredTotal.text = String(format: "$ %3.2f", product)
         }
         else{
             billsSum = Int(hundredQuantity.text!)!
             product = Float(billsSum) * 100
             hundredTotal.text = String(format: "$ %3.2f", product)
-            amountSum = product
+            Bills.amountSum = product
         }
         if Int(fiftyQuantity.text!) == nil {
             fiftyTotal.text = "$ 0.00"
@@ -67,7 +77,7 @@ class Bills: UIViewController {
             billsSum = Int(fiftyQuantity.text!)! + billsSum
             product = Float(fiftyQuantity.text!)! * 50
             fiftyTotal.text = String(format: "$ %3.2f", product)
-            amountSum = amountSum + product
+            Bills.amountSum = Bills.amountSum + product
         }
         if Float(twentyQuantity.text!) == nil {
             twentyTotal.text = "$ 0.00"
@@ -76,7 +86,7 @@ class Bills: UIViewController {
             billsSum = Int(twentyQuantity.text!)! + billsSum
             product = Float(twentyQuantity.text!)! * 20
             twentyTotal.text = String(format: "$ %3.2f", product)
-            amountSum = amountSum + product
+            Bills.amountSum = Bills.amountSum + product
         }
         if Int(tenQuantity.text!) == nil {
             tenTotal.text = "$ 0.00"
@@ -85,7 +95,7 @@ class Bills: UIViewController {
             billsSum = Int(tenQuantity.text!)! + billsSum
             product = Float(tenQuantity.text!)! * 10
             tenTotal.text = String(format: "$ %3.2f",product)
-            amountSum = product + amountSum
+            Bills.amountSum = product + Bills.amountSum
         }
         if Int(fiveQuantity.text!) == nil {
             fiveTotal.text = "$ 0.00"
@@ -94,7 +104,7 @@ class Bills: UIViewController {
             billsSum = Int(fiveQuantity.text!)! + billsSum
             product = Float(fiveQuantity.text!)! * 5
             fiveTotal.text = String(format: "$ %3.2f", product)
-            amountSum = product + amountSum
+            Bills.amountSum = product + Bills.amountSum
         }
         if Int(twoQuantity.text!) == nil {
             twoTotal.text = "$ 0.00"
@@ -103,7 +113,7 @@ class Bills: UIViewController {
             billsSum = Int(twoQuantity.text!)! + billsSum
             product = Float(twoQuantity.text!)! * 2
             twoTotal.text = String(format: "$ %3.2f", product)
-            amountSum = product + amountSum
+            Bills.amountSum = product + Bills.amountSum
         }
         if Int(oneQuantity.text!) == nil {
             oneTotal.text = "$ 0.00"
@@ -112,17 +122,16 @@ class Bills: UIViewController {
             billsSum = Int(oneQuantity.text!)! + billsSum
             product = Float(oneQuantity.text!)!
             oneTotal.text = String(format: "$ %3.2f", product)
-            amountSum = product + amountSum
+            Bills.amountSum = product + Bills.amountSum
         }
         totalQuantity.text = String(billsSum)
-        totalAmount.text = String(format: "$ %03.2f", amountSum)
-        print("0 is " + String(amountSum))
-        overall = amountSum + CoinRolls().getTotal() + LooseCoins().getTotal()
-        overallTotal.text = String(format: "Total: $ %03.2f", overall)
+        totalAmount.text = String(format: "$ %03.2f", Bills.amountSum)
+        Bills.overall = Bills.amountSum + CoinRolls().getTotal() + LooseCoins().getTotal()
+        overallTotal.text = String(format: "Total: $ %03.2f", Bills.overall)
     }
     
     func getTotal() -> Float{
-        return amountSum
+        return Bills.amountSum
     }
 }
 
